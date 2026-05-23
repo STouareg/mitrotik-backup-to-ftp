@@ -35,11 +35,7 @@
 :local dateStr ($year . "-" . $month . "-" . $day);
 
 # --- Build filenames ---
-:local routerIp [/ip address get [/ip address find interface=ether1] address];
-# Strip the subnet mask (e.g. "10.11.97.1/24" -> "10.11.97.1")
-:local slashPos [:find $routerIp "/"];
-:if ($slashPos > 0) do={ :set routerIp [:pick $routerIp 0 $slashPos] };
-
+# $routerIp is set in the credentials script
 :local baseName ($routerIp . "_" . $dateStr);
 :local backupFile ($baseName . ".backup");
 :local exportFile ($baseName . ".rsc");

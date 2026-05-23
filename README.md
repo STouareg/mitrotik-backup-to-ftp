@@ -41,6 +41,7 @@ Copy `credentials.example.rsc`, fill in your values, and add it to RouterOS as a
 /system script add \
   name="credentials" \
   source={
+    :global routerIp "10.11.97.1";
     :global ftphost "10.11.97.3";
     :global ftpuser "mikrotik_backup";
     :global ftppassword "yourpassword";

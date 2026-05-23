@@ -15,6 +15,9 @@
 #   - Consider placing the FTP server on an isolated management VLAN.
 # =============================================================================
 
+# This router's IP address - used as the prefix in backup filenames
+:global routerIp "10.0.0.1";
+
 # FTP server IP or hostname
 :global ftphost "0.0.0.0";
 
