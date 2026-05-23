@@ -4,9 +4,10 @@ credentials.rsc
 # RouterOS backup and export files (in case they end up in the folder)
 *.backup
 *.rsc
-# Allow the example credentials and the main script
+# Allow the example credentials and the main scripts
 !credentials.example.rsc
-!backup.rsc
+!daily-backup.rsc
+!weekly-backup.rsc
 
 # OS files
 .DS_Store

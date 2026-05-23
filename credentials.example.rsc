@@ -1,31 +1,27 @@
 # =============================================================================
-# MikroTik Backup - Credentials Script
-# =============================================================================
-# INSTRUCTIONS:
-#   1. Copy this file and add it to RouterOS scripts with the name "credentials".
-#   2. Fill in your actual values below.
-#   3. Add the script via Winbox: System -> Scripts -> Add, or via terminal:
-#      /system script add name="credentials" source=[/file get credentials.rsc contents]
-#   4. Restrict access: ensure only admin users can view and edit scripts.
+# MikroTik Backup — Credentials Template
+# Copy this file, fill in real values, and add to RouterOS as a script
+# named "credentials". DO NOT commit the filled version to git.
 #
-# SECURITY NOTE:
-#   RouterOS has no built-in secrets manager. To protect these values:
-#   - Limit Winbox/SSH access to trusted admin accounts only.
-#   - Do NOT export this script externally or include it in shared backups.
-#   - Consider placing the FTP server on an isolated management VLAN.
+# /system script add name="credentials" source=[/file get credentials.rsc contents]
 # =============================================================================
 
-# This router's IP address - used as the prefix in backup filenames
-:global routerIp "10.0.0.1";
+# Router's own IP (used in backup filenames)
+:global routerIp "10.11.97.1";
 
-# SFTP server IP or hostname
-:global ftphost "0.0.0.0";
+# SFTP server
+:global ftphost "10.11.97.3";
+:global ftpuser "mikrotik_backup";
+:global ftppassword "yourpassword";
 
-# SFTP username
-:global ftpuser "your_sftp_username";
+# Remote path for this router's backups (must already exist on the server)
+:global ftppath "/Backups/Mikrotik/10.11.97.1/";
 
-# SFTP password
-:global ftppassword "your_sftp_password";
-
-# Destination path on SFTP server (must end with /)
-:global ftppath "/Backups/Mikrotik_backups/";
+# Telegram notifications (errors only)
+# How to get these:
+#   tgtoken  — create a bot via @BotFather, copy the token
+#   tgchatid — send a message to your bot, then open:
+#              https://api.telegram.org/bot<tgtoken>/getUpdates
+#              and copy the "id" field from "chat"
+:global tgtoken "123456789:AABBCCDDEEFFaabbccddeeff-1234567890";
+:global tgchatid "987654321";
