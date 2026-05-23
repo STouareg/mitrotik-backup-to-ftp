@@ -5,7 +5,7 @@ Automated MikroTik configuration backup to an SFTP server with **change detectio
 ## What the scripts do
 
 ### `daily-backup.rsc` (runs every night)
-- Checks free disk space before starting (minimum 2 MB).
+- Checks free disk space before starting (minimum 512 KB).
 - Exports the current config and compares it with the previously saved state.
 - If changes are detected — uploads the `.rsc` file to SFTP.
 - If no changes — skips the upload silently.
@@ -14,7 +14,7 @@ Automated MikroTik configuration backup to an SFTP server with **change detectio
 - Sends a **Telegram notification** on any error.
 
 ### `weekly-backup.rsc` (runs once a week)
-- Checks free disk space before starting (minimum 10 MB).
+- Checks free disk space before starting (minimum 300 KB).
 - Creates a full binary `.backup` file unconditionally.
 - Uploads it to SFTP.
 - Retries failed uploads up to **3 times** with a **60-second delay** between attempts.
@@ -145,6 +145,8 @@ Expected log messages:
 | Upload retry | `Upload attempt 2/3 failed for: <filename>` |
 | Upload failed after all retries | `Failed to upload after 3 attempts: <filename>` |
 | Not enough disk space | `Not enough disk space. Free: <N> bytes.` |
+
+> Default thresholds are 512 KB (daily) and 300 KB (weekly) — tuned for routers with small flash storage (e.g. hAP ac²). Adjust if your router has more space available.
 | File missing after save | `Backup file not found after /system backup save: <filename>` |
 | Completed successfully | `Daily backup complete: <filename> - local file removed.` |
 | Completed successfully | `Weekly backup complete: <filename> - local file removed.` |
