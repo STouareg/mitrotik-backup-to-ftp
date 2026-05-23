@@ -59,8 +59,14 @@
 # STEP 2 - Save full binary backup
 # =============================================================================
 
-/system backup save name=$baseName;
-:delay 5s;
+/system backup save name=$backupFile;
+:delay 10s;
+
+# Verify backup file was created before attempting upload
+:if ([:len [/file find name=$backupFile]] = 0) do={
+  :log error message=("Backup file not found after save: " . $backupFile);
+  :error "backup-file-missing";
+};
 
 # =============================================================================
 # STEP 3 - Upload both files to FTP
