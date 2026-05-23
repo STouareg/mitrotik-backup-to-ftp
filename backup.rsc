@@ -12,27 +12,8 @@
 /system script run credentials;
 
 # --- Build date string: YYYY-MM-DD ---
-:local today [/system clock get date];
-# RouterOS date format: "mon/dd/yyyy" -> we need "yyyy-mm-dd"
-:local year  [:pick $today 7 11];
-:local monthName [:pick $today 0 3];
-:local day   [:pick $today 4 6];
-
-:local month "00";
-:if ($monthName = "jan") do={ :set month "01" };
-:if ($monthName = "feb") do={ :set month "02" };
-:if ($monthName = "mar") do={ :set month "03" };
-:if ($monthName = "apr") do={ :set month "04" };
-:if ($monthName = "may") do={ :set month "05" };
-:if ($monthName = "jun") do={ :set month "06" };
-:if ($monthName = "jul") do={ :set month "07" };
-:if ($monthName = "aug") do={ :set month "08" };
-:if ($monthName = "sep") do={ :set month "09" };
-:if ($monthName = "oct") do={ :set month "10" };
-:if ($monthName = "nov") do={ :set month "11" };
-:if ($monthName = "dec") do={ :set month "12" };
-
-:local dateStr ($year . "-" . $month . "-" . $day);
+# RouterOS 7.x already returns the date in YYYY-MM-DD format
+:local dateStr [/system clock get date];
 
 # --- Build filenames ---
 # $routerIp is set in the credentials script
@@ -92,7 +73,7 @@
     user=$ftpuser \
     mode=ftp \
     password=$ftppassword \
-    dst-path=($ftppath . $backupFile) \
+    dst-path=$ftppath \
     upload=yes;
   :delay 3s;
 } on-error={
@@ -109,7 +90,7 @@
     user=$ftpuser \
     mode=ftp \
     password=$ftppassword \
-    dst-path=($ftppath . $exportFile) \
+    dst-path=$ftppath \
     upload=yes;
   :delay 3s;
 } on-error={

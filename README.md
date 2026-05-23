@@ -123,5 +123,5 @@ RouterOS has no built-in secrets manager. Recommended practices:
 
 ## Compatibility
 
-Tested on RouterOS **6.49+** and **7.x**.  
-Older versions may require adjustments to the `/system clock get date` command format.
+Tested on RouterOS **7.x**.  
+RouterOS 7.x returns the date already in `YYYY-MM-DD` format. On RouterOS **6.x** the date format is `mon/dd/yyyy` — additional parsing would be required.
