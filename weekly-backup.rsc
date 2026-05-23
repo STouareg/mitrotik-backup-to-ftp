@@ -10,47 +10,6 @@
 # --- Load credentials ---
 /system script run credentials;
 
-# --- Helper: send Telegram notification on error ---
-:local sendTelegram do={
-  :do {
-    /tool fetch \
-      url=("https://api.telegram.org/bot" . $tgtoken . "/sendMessage") \
-      http-method=post \
-      http-data=("chat_id=" . $tgchatid . "&text=" . $1) \
-      output=none;
-  } on-error={
-    :log warning message="Failed to send Telegram notification.";
-  };
-}
-
-# --- Helper: upload with retry (3 attempts, 60s delay) ---
-:local uploadWithRetry do={
-  :local attempts 3;
-  :local success false;
-  :local attempt 1;
-  :while ($attempt <= $attempts) do={
-    :do {
-      /tool fetch \
-        address=$2 \
-        src-path=$1 \
-        user=$3 \
-        mode=sftp \
-        password=$4 \
-        dst-path=$5 \
-        upload=yes;
-      :set success true;
-      :set attempt ($attempts + 1);
-    } on-error={
-      :log warning message=("Upload attempt " . $attempt . "/" . $attempts . " failed for: " . $1);
-      :if ($attempt < $attempts) do={
-        :delay 60s;
-      };
-      :set attempt ($attempt + 1);
-    };
-  };
-  :return $success;
-}
-
 # --- Build filenames ---
 :local dateStr [/system clock get date];
 :local rosVer [:pick [/system resource get version] 0 [:find [/system resource get version] " "]];
@@ -60,14 +19,17 @@
 :log info message=("Weekly backup starting for: " . $baseName);
 
 # =============================================================================
-# STEP 1 - Check free disk space (minimum 10MB for binary backup)
+# STEP 1 - Check free disk space (minimum 10MB)
 # =============================================================================
 
 :local freeSpace [/system resource get free-hdd-space];
-:if ($freeSpace < 10485760) do={
-  :local msg ("[\U0001F534 Backup ERROR] " . $routerIp . " - Not enough disk space. Free: " . $freeSpace . " bytes.");
+:if ($freeSpace < 307200) do={
+  :local msg ("[Backup ERROR] " . $routerIp . " - Not enough disk space. Free: " . $freeSpace . " bytes.");
   :log error message=$msg;
-  $sendTelegram $msg;
+  :do {
+    /tool fetch url=("https://api.telegram.org/bot" . $tgtoken . "/sendMessage") \
+      http-method=post http-data=("chat_id=" . $tgchatid . "&text=" . $msg) output=none;
+  } on-error={ :log warning message="Failed to send Telegram notification."; };
   :error "not-enough-space";
 };
 
@@ -80,20 +42,42 @@
 
 # Validate backup file was created
 :if ([:len [/file find name=$backupFile]] = 0) do={
-  :local msg ("[\U0001F534 Backup ERROR] " . $routerIp . " - Backup file not found after /system backup save: " . $backupFile);
+  :local msg ("[Backup ERROR] " . $routerIp . " - Backup file not found after /system backup save: " . $backupFile);
   :log error message=$msg;
-  $sendTelegram $msg;
+  :do {
+    /tool fetch url=("https://api.telegram.org/bot" . $tgtoken . "/sendMessage") \
+      http-method=post http-data=("chat_id=" . $tgchatid . "&text=" . $msg) output=none;
+  } on-error={ :log warning message="Failed to send Telegram notification."; };
   :error "backup-file-missing";
 };
 
 :log info message=("Backup file created: " . $backupFile);
 
 # =============================================================================
-# STEP 3 - Upload .backup to SFTP with retry
+# STEP 3 - Upload .backup to SFTP with retry (3 attempts, 60s delay)
 # =============================================================================
 
 :log info message=("Uploading: " . $backupFile);
-:local uploadOk [$uploadWithRetry $backupFile $ftphost $ftpuser $ftppassword ($ftppath . $backupFile)];
+:local uploadOk false;
+:local attempt 1;
+:while ($attempt <= 3) do={
+  :do {
+    /tool fetch \
+      address=$ftphost \
+      src-path=$backupFile \
+      user=$ftpuser \
+      mode=sftp \
+      password=$ftppassword \
+      dst-path=($ftppath . $backupFile) \
+      upload=yes;
+    :set uploadOk true;
+    :set attempt 4;
+  } on-error={
+    :log warning message=("Upload attempt " . $attempt . "/3 failed for: " . $backupFile);
+    :if ($attempt < 3) do={ :delay 60s; };
+    :set attempt ($attempt + 1);
+  };
+};
 
 # =============================================================================
 # STEP 4 - Clean up local file (only if upload succeeded)
@@ -103,8 +87,11 @@
   /file remove $backupFile;
   :log info message=("Weekly backup complete: " . $backupFile . " - local file removed.");
 } else={
-  :local msg ("[\U0001F534 Backup ERROR] " . $routerIp . " - Failed to upload after 3 attempts: " . $backupFile);
+  :local msg ("[Backup ERROR] " . $routerIp . " - Failed to upload after 3 attempts: " . $backupFile);
   :log error message=$msg;
-  $sendTelegram $msg;
+  :do {
+    /tool fetch url=("https://api.telegram.org/bot" . $tgtoken . "/sendMessage") \
+      http-method=post http-data=("chat_id=" . $tgchatid . "&text=" . $msg) output=none;
+  } on-error={ :log warning message="Failed to send Telegram notification."; };
   :log warning message="Local file preserved for manual recovery.";
 };
