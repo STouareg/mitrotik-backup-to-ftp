@@ -6,7 +6,7 @@ Automated MikroTik configuration backup to an FTP server with **change detection
 
 - Exports the current config and compares it with the previously saved state.
 - If changes are detected — creates a `.backup` (binary) and `.rsc` (text export) file.
-- Uploads both files to the FTP server.
+- Uploads both files to the SFTP server.
 - Deletes local files **only after a successful upload**.
 - If an upload fails — preserves local files and writes an error to the log.
 
@@ -48,6 +48,8 @@ Copy `credentials.example.rsc`, fill in your values, and add it to RouterOS as a
     :global ftppath "/Backups/Mikrotik_backups/";
   }
 ```
+
+> Variables are named `ftp*` for historical reasons but the script uses **SFTP** (`mode=sftp`).
 
 ### 2. Add the config hash tracking script
 

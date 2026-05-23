@@ -18,14 +18,14 @@
 # This router's IP address - used as the prefix in backup filenames
 :global routerIp "10.0.0.1";
 
-# FTP server IP or hostname
+# SFTP server IP or hostname
 :global ftphost "0.0.0.0";
 
-# FTP username
-:global ftpuser "your_ftp_username";
+# SFTP username
+:global ftpuser "your_sftp_username";
 
-# FTP password
-:global ftppassword "your_ftp_password";
+# SFTP password
+:global ftppassword "your_sftp_password";
 
-# Destination path on FTP server (must end with /)
+# Destination path on SFTP server (must end with /)
 :global ftppath "/Backups/Mikrotik_backups/";

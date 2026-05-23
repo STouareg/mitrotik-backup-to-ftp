@@ -71,9 +71,9 @@
     address=$ftphost \
     src-path=$backupFile \
     user=$ftpuser \
-    mode=ftp \
+    mode=sftp \
     password=$ftppassword \
-    dst-path=$ftppath \
+    dst-path=($ftppath . $backupFile) \
     upload=yes;
   :delay 3s;
 } on-error={
@@ -88,9 +88,9 @@
     address=$ftphost \
     src-path=$exportFile \
     user=$ftpuser \
-    mode=ftp \
+    mode=sftp \
     password=$ftppassword \
-    dst-path=$ftppath \
+    dst-path=($ftppath . $exportFile) \
     upload=yes;
   :delay 3s;
 } on-error={
