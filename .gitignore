@@ -1,0 +1,20 @@
+# Real credentials file - never commit!
+credentials.rsc
+
+# RouterOS backup and export files (in case they end up in the folder)
+*.backup
+*.rsc
+# Allow the example credentials and the main script
+!credentials.example.rsc
+!backup.rsc
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor directories
+.vscode/
+.idea/
+*.swp
+*.swo
