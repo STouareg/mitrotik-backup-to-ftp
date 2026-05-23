@@ -7,15 +7,15 @@
 # =============================================================================
 
 # Router's own IP (used in backup filenames)
-:global routerIp "10.11.97.1";
+:global routerIp "192.168.88.1";
 
 # SFTP server
-:global ftphost "10.11.97.3";
+:global ftphost "192.168.88.3";
 :global ftpuser "mikrotik_backup";
 :global ftppassword "yourpassword";
 
 # Remote path for this router's backups (must already exist on the server)
-:global ftppath "/Backups/Mikrotik/10.11.97.1/";
+:global ftppath "/Backups/Mikrotik/192.168.88.1/";
 
 # Telegram notifications (errors only)
 # How to get these:
