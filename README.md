@@ -13,11 +13,11 @@ Automated MikroTik configuration backup to an FTP server with **change detection
 ### Filename format
 
 ```
-<router-ip>_YYYY-MM-DD.backup
+<router-ip>_YYYY-MM-DD_<ros-version>.backup
 <router-ip>_YYYY-MM-DD.rsc
 ```
 
-Example: `10.11.97.1_2025-05-23.backup`
+Example: `10.11.97.1_2026-05-23_7.22.2.backup`
 
 ---
 

@@ -1,7 +1,8 @@
 # =============================================================================
 # MikroTik Smart Backup Script
-# Uploads .backup and .rsc files to FTP only if config has changed.
-# Filename format: <router-ip>_YYYY-MM-DD.backup / .rsc
+# Uploads .backup and .rsc files to SFTP only if config has changed.
+# Filename format: <router-ip>_YYYY-MM-DD_<ros-version>.backup
+#                 <router-ip>_YYYY-MM-DD.rsc
 # =============================================================================
 # Dependencies:
 #   - "credentials" script must exist and be run first (sets global variables)
@@ -15,10 +16,13 @@
 # RouterOS 7.x already returns the date in YYYY-MM-DD format
 :local dateStr [/system clock get date];
 
+# --- Get RouterOS version (e.g. "7.22.2") ---
+:local rosVer [:pick [/system resource get version] 0 [:find [/system resource get version] " "]];
+
 # --- Build filenames ---
 # $routerIp is set in the credentials script
 :local baseName ($routerIp . "_" . $dateStr);
-:local backupFile ($baseName . ".backup");
+:local backupFile ($baseName . "_" . $rosVer . ".backup");
 :local exportFile ($baseName . ".rsc");
 
 :log info message=("Smart backup starting for: " . $baseName);
