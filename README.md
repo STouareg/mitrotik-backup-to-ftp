@@ -9,6 +9,7 @@ Automated MikroTik configuration backup to an SFTP server with **change detectio
 - Exports the current config and compares it with the previously saved state.
 - If changes are detected — uploads the `.rsc` file to SFTP.
 - If no changes — skips the upload silently.
+- The first line of the export (which contains the current timestamp) is ignored during comparison to avoid false positives.
 - Deletes the local file **only after a successful upload**.
 - Retries failed uploads up to **3 times** with a **60-second delay** between attempts.
 - Sends a **Telegram notification** on any error.
@@ -30,8 +31,8 @@ Automated MikroTik configuration backup to an SFTP server with **change detectio
 
 Example:
 ```
-192.168.88.1_2026-05-23.rsc
-192.168.88.1_2026-05-23_7.22.2.backup
+10.11.97.1_2026-05-23.rsc
+10.11.97.1_2026-05-23_7.22.2.backup
 ```
 
 ---
@@ -57,11 +58,11 @@ Copy `credentials.example.rsc`, fill in your values, and add it to RouterOS as a
 /system script add \
   name="credentials" \
   source={
-    :global routerIp "192.168.88.1";
-    :global ftphost "192.168.88.3";
+    :global routerIp "10.11.97.1";
+    :global ftphost "10.11.97.3";
     :global ftpuser "mikrotik_backup";
     :global ftppassword "yourpassword";
-    :global ftppath "/Backups/Mikrotik/192.168.88.1/";
+    :global ftppath "/Backups/Mikrotik/10.11.97.1/";
     :global tgtoken "123456789:AABBCCDDEEFFaabbccddeeff-1234567890";
     :global tgchatid "987654321";
   }

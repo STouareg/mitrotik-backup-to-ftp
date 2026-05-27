@@ -51,7 +51,9 @@
   :error "export-file-missing";
 };
 
-:local currentConfig [/file get $exportFile contents];
+# Strip the first line (contains timestamp) before comparing
+:local rawConfig [/file get $exportFile contents];
+:local currentConfig [:pick $rawConfig ([:find $rawConfig "\n"] + 1) [:len $rawConfig]];
 
 # Read last saved hash
 :local lastHash "";
