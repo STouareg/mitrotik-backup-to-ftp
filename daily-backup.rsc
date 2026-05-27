@@ -51,20 +51,21 @@
   :error "export-file-missing";
 };
 
-# Strip the first line (contains timestamp) before comparing
-:local rawConfig [/file get $exportFile contents];
-:local currentConfig [:pick $rawConfig ([:find $rawConfig "\n"] + 1) [:len $rawConfig]];
+# Use file size as change indicator.
+# The first line of /export contains a timestamp but has fixed length,
+# so file size stays identical across runs when config has not changed.
+:local currentSize [:tostr [/file get $exportFile size]];
 
-# Read last saved hash
-:local lastHash "";
+# Read last saved size
+:local lastSize "";
 :do {
-  :set lastHash [/system script get "last-config-hash" source];
+  :set lastSize [/system script get "last-config-hash" source];
 } on-error={
-  :log info message="No previous hash found. Creating last-config-hash script.";
+  :log info message="No previous size found. Creating last-config-hash script.";
   /system script add name="last-config-hash" source="" comment="DO NOT EDIT - used by daily-backup to track config changes";
 };
 
-:if ($currentConfig = $lastHash) do={
+:if ($currentSize = $lastSize) do={
   :log info message="No config changes detected. Daily backup skipped.";
   /file remove $exportFile;
   :error "no-changes";
@@ -103,7 +104,7 @@
 # =============================================================================
 
 :if ($uploadOk) do={
-  /system script set "last-config-hash" source=$currentConfig;
+  /system script set "last-config-hash" source=$currentSize;
   /file remove $exportFile;
   :log info message=("Daily backup complete: " . $exportFile . " - local file removed.");
 } else={

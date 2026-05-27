@@ -6,10 +6,11 @@ Automated MikroTik configuration backup to an SFTP server with **change detectio
 
 ### `daily-backup.rsc` (runs every night)
 - Checks free disk space before starting (minimum 512 KB).
-- Exports the current config and compares it with the previously saved state.
-- If changes are detected — uploads the `.rsc` file to SFTP.
-- If no changes — skips the upload silently.
-- The first line of the export (which contains the current timestamp) is ignored during comparison to avoid false positives.
+- Exports the current config and compares its **file size** with the previously saved value.
+- If the size has changed — uploads the `.rsc` file to SFTP.
+- If the size is the same — skips the upload silently.
+
+> **Note:** File size comparison works reliably for most configuration changes. However, edits that add and remove the same number of bytes in the same run (e.g. swapping one comment for another of equal length) will not be detected. For environments where every change must be captured, consider disabling change detection and uploading unconditionally.
 - Deletes the local file **only after a successful upload**.
 - Retries failed uploads up to **3 times** with a **60-second delay** between attempts.
 - Sends a **Telegram notification** on any error.
